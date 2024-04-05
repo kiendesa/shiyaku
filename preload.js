@@ -1,40 +1,27 @@
-window.onload = () => {
-    console.log("uuuuu");
-    const electron = require('electron');
-    electron.ipcRenderer.on('sendExcelData', (event, excelData) => {
-        const tableContainer = document.getElementById('excel-table');
-        const table = document.createElement('table');
-        const thead = document.createElement('thead');
-        const tbody = document.createElement('tbody');
+const { ipcRenderer } = require('electron');
+const xlsx = require('xlsx');
 
-        // Create table header
-        const headerRow = document.createElement('tr');
-        Object.keys(excelData[0]).forEach(key => {
-            const th = document.createElement('th');
-            th.textContent = key;
-            headerRow.appendChild(th);
-        });
-        thead.appendChild(headerRow);
+document.getElementById('directoryInput').addEventListener('change', function (event) {
+    const fileList = event.target.files;
 
-        // Create table body
-        excelData.forEach(row => {
-            const tr = document.createElement('tr');
-            Object.values(row).forEach(value => {
-                const td = document.createElement('td');
-                td.textContent = value;
-                tr.appendChild(td);
-            });
-            tbody.appendChild(tr);
-        });
+    if (fileList.length > 0) {
+        console.log("file list", fileList);
+        //pathを表示する
+        const fullPath = fileList[0].path;
+        const lastSlashIndex = fullPath.lastIndexOf("\\");
+        const folderPath = fullPath.substring(0, lastSlashIndex);
+        document.getElementById('folder-path').innerText = "Selected folder: " + folderPath;
+        const filePaths = Array.from(fileList).map(file => file.path);
+        // Gửi yêu cầu đọc dữ liệu từ file Excel đến main process
+        ipcRenderer.send('readExcelData', filePaths);
 
-        // Add thead and tbody to table
-        table.appendChild(thead);
-        table.appendChild(tbody);
+    } else {
+        document.getElementById('folder-path').innerText = "No folder selected";
+    }
+});
 
-        // Add table to container
-        tableContainer.appendChild(table);
-    });
-
-    // Gửi yêu cầu để nhận dữ liệu Excel
-    electron.ipcRenderer.send('requestExcelData');
-};
+// Lắng nghe sự kiện reply từ main process để nhận dữ liệu Excel và hiển thị
+ipcRenderer.on('excelData', (event, cellValue) => {
+    console.log("Data from Excel:", cellValue);
+    // Hiển thị dữ liệu trên giao diện người dùng
+});

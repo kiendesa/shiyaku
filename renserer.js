@@ -1,5 +1,4 @@
 window.onload = () => {
-    console.log("uuuuu");
     const electron = require('electron');
     electron.ipcRenderer.on('sendExcelData', (event, excelData) => {
         const tableContainer = document.getElementById('excel-table');
