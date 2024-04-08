@@ -33,17 +33,15 @@ function createWindow() {
         const cellValue = sheet[cellAddress].v;
 
         // Ghi dữ liệu vào một file Excel mới
-        const newWorkbook = xlsx.utils.book_new();
-        const newSheet = xlsx.utils.aoa_to_sheet([[cellValue]]);
-        xlsx.utils.book_append_sheet(newWorkbook, newSheet, 'Sheet1');
+
         const outputPath = path.join(__dirname, 'Book1.xlsx');
-        // const outputPath = 'C:\Users\DSN\Desktop\Gangter\shiyaku\test.xlsx'; // Đường dẫn và tên file Excel mới
-        xlsx.writeFile(newWorkbook, outputPath);
+        var book = xlsx.readFile(outputPath);
+        const sheet2 = book.Sheets["Sheet1"];
+        sheet2["D5"] = { t: "s", v: "hoge1", w: "hoge1" };
+        book.Sheets["Sheet1"] = sheet2;
+        xlsx.writeFile(book, outputPath);
 
-        // Gửi đường dẫn của file Excel mới về renderer process nếu cần
         event.reply('excelDataWritten', outputPath);
-
-        // Gửi dữ liệu về renderer process
         event.reply('excelData', cellValue);
     });
 }
