@@ -23,10 +23,40 @@ function createWindow() {
             // Đọc workbook gốc
             const workbookData = new ExcelJS.Workbook();
             const workbook = await workbookData.xlsx.readFile(filePaths[0]);
-            const sheetName = '届出と附票';
-            const worksheet = workbook.getWorksheet(sheetName);
-            const cellValue = worksheet.getCell('B11').value.result;
-            const cellValue1 = worksheet.getCell('O28').value.result;
+
+            /*--- 届出と附票シートにデータを取得する---*/
+            const worksheet = workbook.getWorksheet('届出と附票');
+            //② 人口動態処理業務（全件）
+            const allCaseValue = worksheet.getCell('B11').value.result;
+            //③ 附表関連処理業務
+            let processValue = null;
+            worksheet.getColumn('K').eachCell({ includeEmpty: false }, function (cell, rowNumber) {
+                if (cell.value === '合計') {
+                    processValue = worksheet.getCell('O' + rowNumber).value;
+                    return false;
+                }
+            });
+            //① 届出処理業務（送付分のみ）
+            let sendValue = null;
+            worksheet.getColumn('A').eachCell({ includeEmpty: false }, function (cell, rowNumber) {
+                if (cell.value === '合計') {
+                    sendValue = worksheet.getCell('B' + rowNumber).value;
+                    return false;
+                }
+            });
+            // 営業日
+            let lastRow = worksheet.getColumn(1).values.length;
+            // Duyệt qua từng hàng từ 5 đến lastRow
+            let count = 0;
+            for (let m = 5; m <= lastRow; m++) {
+                const date_chk = worksheet.getCell(m, 11).value;
+                if (typeof date_chk === 'object' && date_chk !== null) {
+                    if (date_chk.result instanceof Date) {
+                        count = count + 1;
+                    }
+                }
+            }
+            // const sendValue = worksheet.getCell('B46').value.result;
 
             // Tạo một workbook mới và sao chép dữ liệu từ workbook hiện tại
             const newWorkbook = new ExcelJS.Workbook();
@@ -47,20 +77,22 @@ function createWindow() {
                 });
             });
 
-            // Cập nhật giá trị của ô D5 và D6 trong workbook mới
+            // Cập nhật giá trị của ô D5 và D6, D7 trong workbook mới
             const newCellD5 = newWorksheet.getCell('D5');
             const newCellD6 = newWorksheet.getCell('D6');
-            newCellD5.value = cellValue;
-            newCellD6.value = cellValue1;
+            const newCellD7 = newWorksheet.getCell('D7');
+            newCellD5.value = sendValue.result;
+            newCellD6.value = allCaseValue;
+            newCellD7.value = processValue.result;
 
             // Lưu workbook mới vào file mới
             await newWorkbook.xlsx.writeFile(outputPath);
 
-            console.log('Dữ liệu đã được cập nhật và ghi vào file Excel mới thành công.');
+            console.log('susscess....');
             event.reply('excelDataWritten', outputPath);
-            event.reply('excelData', cellValue);
+            event.reply('excelData', sendValue);
         } catch (error) {
-            console.error('Lỗi khi thao tác với file Excel:', error);
+            console.error('error file Excel:', error);
         }
     });
 }
