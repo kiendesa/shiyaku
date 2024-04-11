@@ -20,13 +20,15 @@ function createWindow() {
         try {
             for (let index = 0; index < filePaths.length; index++) {
                 console.log("index", filePaths.length);
-                const outputPath = path.join(__dirname, 'Book1.xlsx'); // Đường dẫn cho file mới
 
-                // Đọc workbook gốc
+                //データを保存するファイルのURL
+                const outputPath = path.join(__dirname, '年度処理件数集計ツール.xlsx');
+                // オリジナルのエクセルを読み込み
                 const workbookData = new ExcelJS.Workbook();
                 const workbook = await workbookData.xlsx.readFile(filePaths[index]);
 
-                /*--- 届出と附票シートにデータを取得する---*/
+
+                /*ーーーーー届出と附票シートにデータを取得するーーーーーー*/
                 const worksheet = workbook.getWorksheet('届出と附票');
                 //② 人口動態処理業務（全件）
                 const allCaseValue = worksheet.getCell('B11').value.result;
@@ -58,17 +60,19 @@ function createWindow() {
                     }
                 }
 
-                /*--- 戸籍集計報告・グラフ【郵送---*/
-                const worksheetMail = workbook.getWorksheet('戸籍集計報告・グラフ【郵送】');
-                let lastRowMail = worksheetMail.getColumn(1).values.length;
-                const mailValue = worksheetMail.getCell('Z' + lastRowMail).value;
+                /*ーーーーーー戸籍集計報告・グラフ【郵送】ーーーーーーー*/
+                const worksheetUse = workbook.getWorksheet('戸籍集計報告・グラフ【郵送】');
+                let lastUseColumn = worksheetUse.getRow(6).actualCellCount + 1;
+                let lastUseRow = worksheetUse.getColumn(lastUseColumn).values.length - 1;
+                const useValue = worksheetUse.getCell(lastUseRow, lastUseColumn).value;
 
-                /*---戸籍集計報告・グラフ【公用】---*/
-                const worksheetUse = workbook.getWorksheet('戸籍集計報告・グラフ【公用】');
-                let lastRowUse = worksheetUse.getColumn(1).values.length;
-                const useValue = worksheetUse.getCell('Z' + lastRowUse).value;
+                /*ーーーーー戸籍集計報告・グラフ【公用】ーーーーーー*/
+                const worksheetPublic = workbook.getWorksheet('戸籍集計報告・グラフ【公用】');
+                let lastPulicColumn = worksheetPublic.getRow(6).actualCellCount + 1;
+                let lastPublicRow = worksheetPublic.getColumn(lastPulicColumn).values.length - 1;
+                const publicValue = worksheetPublic.getCell(lastPublicRow, lastPulicColumn).value;
 
-                /*---住民票集計報告---*/
+                /*ーーーーー住民票集計報告ーーーーーーー*/
                 const worksheetReport = workbook.getWorksheet('住民票集計報告');
                 let lastRowRport = worksheetReport.getColumn(1).values.length - 1;
                 //② 公用請求分（送付分のみ
@@ -80,28 +84,26 @@ function createWindow() {
                 //④ 郵送住民票返戻（該当なし）（送付分のみ）一般
                 const returnValue2 = worksheetReport.getCell('P' + lastRowRport).value;
 
-
-
-                // Tạo một workbook mới và sao chép dữ liệu từ workbook hiện tại
+                //　選択フォルダのデータをコービーするために、新たなworkbookを作成します。
                 const newWorkbook = new ExcelJS.Workbook();
-                const newWorksheet = newWorkbook.addWorksheet('Sheet1');
+                const newWorksheet = newWorkbook.addWorksheet('出力シート');
 
-                // Đọc workbook đích
+                // オリジナルを読み込む
                 const docbookOriginal = new ExcelJS.Workbook();
                 const docbook = await docbookOriginal.xlsx.readFile(outputPath);
-                const docName = 'Sheet1';
+                const docName = '出力シート';
                 const docsheet = docbook.getWorksheet(docName);
 
-                // Sao chép dữ liệu từ workbook đích sang workbook mới
+                // 色と文字フォントなどを全部コービーします。
                 docsheet.eachRow({ includeEmpty: true }, (row, rowNumber) => {
                     row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
                         const newCell = newWorksheet.getCell(rowNumber, colNumber);
-                        Object.assign(newCell, cell); // Sao chép tất cả các thuộc tính của ô, bao gồm cả màu sắc và định dạng
-                        newCell.font = Object.assign({}, cell.font); // Sao chép cả phông chữ
+                        Object.assign(newCell, cell); // 色や書式設定を含むすべてのセルのプロパティをコピーします
+                        newCell.font = Object.assign({}, cell.font); // 文字のフォントをコービーします。
                     });
                 });
 
-                // Cập nhật giá trị của ô D5 và D6, D7 trong workbook mới
+                // データを年度処理件数集計ツール.xlsxにの出力シートに更新します。
                 const newCellDate = newWorksheet.getCell(3, index + 4);
                 const newCellD5 = newWorksheet.getCell(5, index + 4);
                 const newCellD6 = newWorksheet.getCell(6, index + 4);
@@ -117,17 +119,15 @@ function createWindow() {
                 newCellD5.value = sendValue.result;
                 newCellD6.value = allCaseValue;
                 newCellD7.value = processValue.result;
-                newCellD8.value = mailValue.result;
-                newCellD9.value = useValue.result;
+                newCellD8.value = useValue.result;
+                newCellD9.value = publicValue.result;
                 newCellD15.value = receivedValue2.result;
                 newCellD16.value = receivedValue.result;
                 newCellD17.value = returnValue2.result;
                 newCellD18.value = returnValue.result;
 
-
-                // Lưu workbook mới vào file mới
+                // データを年度処理件数集計ツール.xlsxにの出力シートに書き込みます
                 await newWorkbook.xlsx.writeFile(outputPath);
-
                 console.log('susscess....');
                 event.reply('excelDataWritten', outputPath);
                 // event.reply('excelData', sendValue);
