@@ -20,6 +20,8 @@ function createWindow() {
         try {
             //データを保存するファイルのURL
             const outputPath = path.join(__dirname, '年度処理件数集計ツール.xlsx');
+            const maxLength = 12;
+
             for (let index = 0; index < filePaths.length; index++) {
                 console.log("index", filePaths.length);
 
@@ -27,7 +29,6 @@ function createWindow() {
                 // オリジナルのエクセルを読み込み
                 const workbookData = new ExcelJS.Workbook();
                 const workbook = await workbookData.xlsx.readFile(filePaths[index]);
-
                 const data = await getData(workbook);
 
                 // 選択フォルダのデータをコービーするために、新たなworkbookを作成します。
@@ -35,18 +36,7 @@ function createWindow() {
                 let newWorksheet = await saveFile(newWorkbook);
 
                 // データを年度処理件数集計ツール.xlsxにの出力シートに更新します。
-
-                // await writeData()
-                newWorksheet.getCell(3, index + 4).value = data[0];
-                newWorksheet.getCell(5, index + 4).value = data[1];
-                newWorksheet.getCell(6, index + 4).value = data[2];
-                newWorksheet.getCell(7, index + 4).value = data[3];
-                newWorksheet.getCell(8, index + 4).value = data[4];
-                newWorksheet.getCell(9, index + 4).value = data[5];
-                newWorksheet.getCell(15, index + 4).value = data[6];
-                newWorksheet.getCell(16, index + 4).value = data[7];
-                newWorksheet.getCell(17, index + 4).value = data[8];
-                newWorksheet.getCell(18, index + 4).value = data[9];
+                await saveData(newWorksheet, index, data)
 
                 // データを年度処理件数集計ツール.xlsxにの出力シートに書き込みます
                 await newWorkbook.xlsx.writeFile(outputPath);
@@ -55,23 +45,14 @@ function createWindow() {
                 // event.reply('excelData', sendValue);
             }
             if (filePaths.length < 12) {
-                // vi du h den o thu 8 roi muon qua o 9 10 11 12
-                const dai = 12 - filePaths.length
-                for (let index = 0; index < dai; index++) {
+                const lengthFile = maxLength - filePaths.length
+                for (let index = 0; index < lengthFile; index++) {
 
                     const newWorkbook = new ExcelJS.Workbook();
                     let newWorksheet = await saveFile(newWorkbook);
+
                     // データを年度処理件数集計ツール.xlsxにの出力シートに更新します。
-                    newWorksheet.getCell(3, filePaths.length + index + 4).value = '';  //営業日 データ
-                    newWorksheet.getCell(5, filePaths.length + index + 4).value = '';
-                    newWorksheet.getCell(6, filePaths.length + index + 4).value = '';
-                    newWorksheet.getCell(7, filePaths.length + index + 4).value = '';
-                    newWorksheet.getCell(8, filePaths.length + index + 4).value = '';
-                    newWorksheet.getCell(9, filePaths.length + index + 4).value = '';
-                    newWorksheet.getCell(15, filePaths.length + index + 4).value = '';
-                    newWorksheet.getCell(16, filePaths.length + index + 4).value = '';
-                    newWorksheet.getCell(17, filePaths.length + index + 4).value = '';
-                    newWorksheet.getCell(18, filePaths.length + index + 4).value = '';
+                    await saveData(newWorksheet, filePaths.length + index, [])
 
                     // データを年度処理件数集計ツール.xlsxにの出力シートに書き込みます
                     console.log("not enough...");
@@ -171,6 +152,22 @@ async function saveFile(newWorkbook) {
     });
     return newWorksheet
 }
+
+async function saveData(newWorksheet, index, data) {
+
+    //データを書き込み
+    newWorksheet.getCell(3, index + 4).value = data.length !== 0 ? data[0] : '';
+    newWorksheet.getCell(5, index + 4).value = data.length !== 0 ? data[1] : '';
+    newWorksheet.getCell(6, index + 4).value = data.length !== 0 ? data[2] : '';
+    newWorksheet.getCell(7, index + 4).value = data.length !== 0 ? data[3] : '';
+    newWorksheet.getCell(8, index + 4).value = data.length !== 0 ? data[4] : '';
+    newWorksheet.getCell(9, index + 4).value = data.length !== 0 ? data[5] : '';
+    newWorksheet.getCell(15, index + 4).value = data.length !== 0 ? data[6] : '';
+    newWorksheet.getCell(16, index + 4).value = data.length !== 0 ? data[7] : '';
+    newWorksheet.getCell(17, index + 4).value = data.length !== 0 ? data[8] : '';
+    newWorksheet.getCell(18, index + 4).value = data.length !== 0 ? data[9] : '';
+}
+
 
 app.whenReady().then(createWindow);
 
