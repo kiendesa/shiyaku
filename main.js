@@ -33,7 +33,7 @@ function createWindow() {
 
                 // 選択フォルダのデータをコービーするために、新たなworkbookを作成します。
                 const newWorkbook = new ExcelJS.Workbook();
-                let newWorksheet = await saveFile(newWorkbook);
+                let newWorksheet = await saveFile(newWorkbook, outputPath);
 
                 // データを年度処理件数集計ツール.xlsxにの出力シートに更新します。
                 await saveData(newWorksheet, index, data)
@@ -49,7 +49,7 @@ function createWindow() {
                 for (let index = 0; index < lengthFile; index++) {
 
                     const newWorkbook = new ExcelJS.Workbook();
-                    let newWorksheet = await saveFile(newWorkbook);
+                    let newWorksheet = await saveFile(newWorkbook, outputPath);
 
                     // データを年度処理件数集計ツール.xlsxにの出力シートに更新します。
                     await saveData(newWorksheet, filePaths.length + index, [])
@@ -129,10 +129,8 @@ async function getData(workbook) {
         receivedValue.result, returnValue2.result, returnValue.result]
 }
 
-async function saveFile(newWorkbook) {
+async function saveFile(newWorkbook, outputPath) {
 
-    //データを保存するファイルのURL
-    const outputPath = path.join(__dirname, '年度処理件数集計ツール.xlsx');
     //　選択フォルダのデータをコービーするために、新たなworkbookを作成します。
     const newWorksheet = newWorkbook.addWorksheet('出力シート');
 
