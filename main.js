@@ -18,11 +18,11 @@ function createWindow() {
 
     ipcMain.on('readExcelData', async (event, filePaths) => {
         try {
+            //データを保存するファイルのURL
+            const outputPath = path.join(__dirname, '年度処理件数集計ツール.xlsx');
             for (let index = 0; index < filePaths.length; index++) {
                 console.log("index", filePaths.length);
 
-                //データを保存するファイルのURL
-                const outputPath = path.join(__dirname, '年度処理件数集計ツール.xlsx');
                 // オリジナルのエクセルを読み込み
                 const workbookData = new ExcelJS.Workbook();
                 const workbook = await workbookData.xlsx.readFile(filePaths[index]);
@@ -132,11 +132,84 @@ function createWindow() {
                 event.reply('excelDataWritten', outputPath);
                 // event.reply('excelData', sendValue);
             }
+            if (filePaths.length < 12) {
+                // vi du h den o thu 8 roi muon qua o 9 10 11 12
+                const dai = 12 - filePaths.length
+                for (let index = 0; index < dai; index++) {
+
+                    const newWorkbook = new ExcelJS.Workbook();
+                    const newWorksheet = newWorkbook.addWorksheet('出力シート');
+
+                    // オリジナルを読み込む
+                    const docbookOriginal = new ExcelJS.Workbook();
+                    const docbook = await docbookOriginal.xlsx.readFile(outputPath);
+                    const docName = '出力シート';
+                    const docsheet = docbook.getWorksheet(docName);
+
+                    // 色と文字フォントなどを全部コービーします。
+                    docsheet.eachRow({ includeEmpty: true }, (row, rowNumber) => {
+                        row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+                            const newCell = newWorksheet.getCell(rowNumber, colNumber);
+                            Object.assign(newCell, cell); // 色や書式設定を含むすべてのセルのプロパティをコピーします
+                            newCell.font = Object.assign({}, cell.font); // 文字のフォントをコービーします。
+                        });
+                    });
+                    // データを年度処理件数集計ツール.xlsxにの出力シートに更新します。
+                    const newCellDate = newWorksheet.getCell(3, filePaths.length + index + 4);
+                    const newCellD5 = newWorksheet.getCell(5, filePaths.length + index + 4);
+                    const newCellD6 = newWorksheet.getCell(6, filePaths.length + index + 4);
+                    const newCellD7 = newWorksheet.getCell(7, filePaths.length + index + 4);
+                    const newCellD8 = newWorksheet.getCell(8, filePaths.length + index + 4);
+                    const newCellD9 = newWorksheet.getCell(9, filePaths.length + index + 4);
+                    const newCellD15 = newWorksheet.getCell(15, filePaths.length + index + 4);
+                    const newCellD16 = newWorksheet.getCell(16, filePaths.length + index + 4);
+                    const newCellD17 = newWorksheet.getCell(17, filePaths.length + index + 4);
+                    const newCellD18 = newWorksheet.getCell(18, filePaths.length + index + 4);
+
+                    newCellDate.value = '';
+                    newCellD5.value = '';
+                    newCellD6.value = '';
+                    newCellD7.value = '';
+                    newCellD8.value = '';
+                    newCellD9.value = '';
+                    newCellD15.value = '';
+                    newCellD16.value = '';
+                    newCellD17.value = '';
+                    newCellD18.value = '';
+
+                    // データを年度処理件数集計ツール.xlsxにの出力シートに書き込みます
+                    await newWorkbook.xlsx.writeFile(outputPath);
+                }
+            }
 
         } catch (error) {
             console.error('error file Excel:', error);
         }
     });
+}
+
+async function saveFile(newWorkbook) {
+
+    //データを保存するファイルのURL
+    const outputPath = path.join(__dirname, '年度処理件数集計ツール.xlsx');
+    //　選択フォルダのデータをコービーするために、新たなworkbookを作成します。
+    const newWorksheet = newWorkbook.addWorksheet('出力シート');
+
+    // オリジナルを読み込む
+    const docbookOriginal = new ExcelJS.Workbook();
+    const docbook = await docbookOriginal.xlsx.readFile(outputPath);
+    const docName = '出力シート';
+    const docsheet = docbook.getWorksheet(docName);
+
+    // 色と文字フォントなどを全部コービーします。
+    docsheet.eachRow({ includeEmpty: true }, (row, rowNumber) => {
+        row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+            const newCell = newWorksheet.getCell(rowNumber, colNumber);
+            Object.assign(newCell, cell); // 色や書式設定を含むすべてのセルのプロパティをコピーします
+            newCell.font = Object.assign({}, cell.font); // 文字のフォントをコービーします。
+        });
+    });
+    return newWorksheet
 }
 
 app.whenReady().then(createWindow);
