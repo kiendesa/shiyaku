@@ -108,9 +108,11 @@ async function getData(workbook) {
 
     /*ーーーーー戸籍集計報告・グラフ【公用】ーーーーーー*/
     const worksheetPublic = workbook.getWorksheet('戸籍集計報告・グラフ【公用】');
-    let lastPulicColumn = worksheetPublic.getRow(6).actualCellCount + 1;
-    let lastPublicRow = worksheetPublic.getColumn(lastPulicColumn).values.length - 1;
-    const publicValue = worksheetPublic.getCell(lastPublicRow, lastPulicColumn).value;
+    let lastPulicColumn = worksheetPublic.getColumn(1).values.length;
+    const publicValue = worksheetPublic.getCell('Z' + lastPulicColumn).value;
+    // let lastPulicColumn = worksheetPublic.getRow(6).actualCellCount + 1;
+    // let lastPublicRow = worksheetPublic.getColumn(lastPulicColumn).values.length - 1;
+    // const publicValue = worksheetPublic.getCell(lastPublicRow, lastPulicColumn).value;
 
     /*ーーーーー住民票集計報告ーーーーーーー*/
     const worksheetReport = workbook.getWorksheet('住民票集計報告');
