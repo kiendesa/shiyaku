@@ -14,7 +14,6 @@ async function createWindow() {
             nodeIntegration: true
         }
     });
-
     mainWindow.loadFile('index.html');
 
     ipcMain.on('readExcelData', async (event, filePaths) => {
@@ -43,7 +42,7 @@ async function createWindow() {
                 await newWorkbook.xlsx.writeFile(outputPath);
                 console.log('susscess....');
                 event.reply('excelDataWritten', outputPath);
-                event.reply('excelData', data);
+                // event.reply('excelData', data);
             }
             if (filePaths.length < 12) {
                 const lengthFile = maxLength - filePaths.length
@@ -61,6 +60,17 @@ async function createWindow() {
                 }
             }
 
+            // Đọc dữ liệu từ ô D6 của tệp Excel
+            const workbookRender = new ExcelJS.Workbook();
+            await workbookRender.xlsx.readFile(outputPath);
+            const worksheetRender = workbookRender.getWorksheet('出力シート');
+            const dataD6 = worksheetRender.getCell(5, 16).value;
+            console.log('Data from cell D6:', dataD6);
+
+            await printDataToPDF(dataD6);
+
+            mainWindow.webContents.send('excelData', dataD6.result);
+
             // PDFを作る
             mainWindow.webContents.printToPDF({
                 printBackground: true
@@ -77,6 +87,34 @@ async function createWindow() {
         }
     });
 }
+
+async function printDataToPDF(data) {
+
+    const hiddenWindow = new BrowserWindow({
+        width: 800,
+        height: 600,
+        webPreferences: {
+            contextIsolation: false,
+            nodeIntegration: true
+        },
+        show: true
+    });
+
+    hiddenWindow.loadFile('anken.html');
+    await new Promise(resolve => {
+        hiddenWindow.webContents.on('did-finish-load', resolve);
+    });
+    hiddenWindow.webContents.send('data', data.result);
+    const pdfData = await hiddenWindow.webContents.printToPDF({
+        printBackground: true
+    });
+    const pdfPath = path.join(__dirname, 'output1.pdf');
+    fs.writeFileSync(pdfPath, pdfData);
+    console.log('PDF created:', pdfPath);
+    // hiddenWindow.close();
+}
+
+
 
 async function getData(workbook) {
 
