@@ -2,9 +2,10 @@ const { app, BrowserWindow, ipcMain } = require('electron');
 const xlsx = require('xlsx');
 const path = require('path');
 const ExcelJS = require('exceljs');
+const fs = require('fs');
 
 
-function createWindow() {
+async function createWindow() {
     const mainWindow = new BrowserWindow({
         width: 800,
         height: 600,
@@ -42,7 +43,7 @@ function createWindow() {
                 await newWorkbook.xlsx.writeFile(outputPath);
                 console.log('susscess....');
                 event.reply('excelDataWritten', outputPath);
-                // event.reply('excelData', sendValue);
+                event.reply('excelData', data);
             }
             if (filePaths.length < 12) {
                 const lengthFile = maxLength - filePaths.length
@@ -59,6 +60,17 @@ function createWindow() {
                     await newWorkbook.xlsx.writeFile(outputPath);
                 }
             }
+
+            // PDFを作る
+            mainWindow.webContents.printToPDF({
+                printBackground: true
+            }).then(data => {
+                const pdfPath = path.join(__dirname, 'output.pdf');
+                console.log('PDF created:', pdfPath);
+                fs.writeFileSync(pdfPath, data);
+            }).catch(error => {
+                console.error('Error creating PDF:', error);
+            });
 
         } catch (error) {
             console.error('error file Excel:', error);
