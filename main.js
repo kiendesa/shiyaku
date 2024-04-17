@@ -3,7 +3,7 @@ const xlsx = require('xlsx');
 const path = require('path');
 const ExcelJS = require('exceljs');
 const fs = require('fs');
-
+const puppeteer = require('puppeteer');
 
 async function createWindow() {
     const mainWindow = new BrowserWindow({
@@ -60,16 +60,20 @@ async function createWindow() {
                 }
             }
 
+
             // Đọc dữ liệu từ ô D6 của tệp Excel
+
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
             const workbookRender = new ExcelJS.Workbook();
             await workbookRender.xlsx.readFile(outputPath);
             const worksheetRender = workbookRender.getWorksheet('出力シート');
             const dataD6 = worksheetRender.getCell(5, 16).value;
             console.log('Data from cell D6:', dataD6);
 
-            await printDataToPDF(dataD6);
 
             mainWindow.webContents.send('excelData', dataD6.result);
+
 
             // PDFを作る
             mainWindow.webContents.printToPDF({
@@ -86,32 +90,43 @@ async function createWindow() {
             console.error('error file Excel:', error);
         }
     });
-}
 
-async function printDataToPDF(data) {
+    ipcMain.on('printPDF', async (event) => {
 
-    const hiddenWindow = new BrowserWindow({
-        width: 800,
-        height: 600,
-        webPreferences: {
-            contextIsolation: false,
-            nodeIntegration: true
-        },
-        show: true
-    });
+        try {
+            // Đọc dữ liệu từ ô D6 của tệp Excel
+            const outputPath = path.join(__dirname, '年度処理件数集計ツール.xlsx');
+            const workbookRender = new ExcelJS.Workbook();
+            await workbookRender.xlsx.readFile(outputPath);
+            const worksheetRender = workbookRender.getWorksheet('出力シート');
+            const dataD6 = worksheetRender.getCell(5, 16).value;
+            console.log('Data from cell D6:', dataD6);
 
-    hiddenWindow.loadFile('anken.html');
-    await new Promise(resolve => {
-        hiddenWindow.webContents.on('did-finish-load', resolve);
+            // Khởi tạo một trình duyệt mới với Puppeteer
+            const browser = await puppeteer.launch();
+
+            // Mở một trang mới trong trình duyệt
+            const page = await browser.newPage();
+
+            // Tải HTML từ file 'anken.html' và truyền dữ liệu vào nó
+            await page.goto(`file://${path.join(__dirname, 'anken.html')}`);
+            await page.evaluate((data) => {
+                document.getElementById('dataContainer').innerText = data;
+            }, dataD6.result);
+
+
+            // In ra file PDF
+            const pdfPath = path.join(__dirname, 'output1.pdf');
+            await page.pdf({ path: pdfPath, format: 'A4', printBackground: true });
+
+            console.log('PDF created:', pdfPath);
+
+            // Đóng trình duyệt
+            await browser.close();
+        } catch (error) {
+            console.error('Error creating PDF:', error);
+        }
     });
-    hiddenWindow.webContents.send('data', data.result);
-    const pdfData = await hiddenWindow.webContents.printToPDF({
-        printBackground: true
-    });
-    const pdfPath = path.join(__dirname, 'output1.pdf');
-    fs.writeFileSync(pdfPath, pdfData);
-    console.log('PDF created:', pdfPath);
-    // hiddenWindow.close();
 }
 
 
