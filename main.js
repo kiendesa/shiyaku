@@ -14,14 +14,17 @@ async function createWindow() {
             nodeIntegration: true
         }
     });
+
     mainWindow.loadFile('index.html');
+
+
 
     ipcMain.on('readExcelData', async (event, filePaths) => {
         try {
-            //データを保存するファイルのURL
-            const outputPath = path.join(__dirname, '年度処理件数集計ツール.xlsx');
-            const maxLength = 12;
 
+            //データを保存するファイルのURL
+            let outputPath = path.join(__dirname, '年度処理件数集計ツール.xlsx');
+            const maxLength = 12;
             for (let index = 0; index < filePaths.length; index++) {
                 console.log("index", filePaths.length);
 
@@ -59,33 +62,6 @@ async function createWindow() {
                     await newWorkbook.xlsx.writeFile(outputPath);
                 }
             }
-
-
-            // Đọc dữ liệu từ ô D6 của tệp Excel
-
-            await new Promise(resolve => setTimeout(resolve, 2000));
-
-            const workbookRender = new ExcelJS.Workbook();
-            await workbookRender.xlsx.readFile(outputPath);
-            const worksheetRender = workbookRender.getWorksheet('出力シート');
-            const dataD6 = worksheetRender.getCell(5, 16).value;
-            console.log('Data from cell D6:', dataD6);
-
-
-            mainWindow.webContents.send('excelData', dataD6.result);
-
-
-            // PDFを作る
-            mainWindow.webContents.printToPDF({
-                printBackground: true
-            }).then(data => {
-                const pdfPath = path.join(__dirname, 'output.pdf');
-                console.log('PDF created:', pdfPath);
-                fs.writeFileSync(pdfPath, data);
-            }).catch(error => {
-                console.error('Error creating PDF:', error);
-            });
-
         } catch (error) {
             console.error('error file Excel:', error);
         }
@@ -94,14 +70,9 @@ async function createWindow() {
     ipcMain.on('printPDF', async (event) => {
 
         try {
-            // Đọc dữ liệu từ ô D6 của tệp Excel
-            const outputPath = path.join(__dirname, '年度処理件数集計ツール.xlsx');
-            const workbookRender = new ExcelJS.Workbook();
-            await workbookRender.xlsx.readFile(outputPath);
-            const worksheetRender = workbookRender.getWorksheet('出力シート');
-            const dataD6 = worksheetRender.getCell(5, 16).value;
-            console.log('Data from cell D6:', dataD6);
 
+            const dataPdf = await caulateDataforPdf()
+            console.log('Data from cell D6:', dataPdf.totals, dataPdf.sumA, dataPdf.sumB);
             // Khởi tạo một trình duyệt mới với Puppeteer
             const browser = await puppeteer.launch();
 
@@ -110,9 +81,32 @@ async function createWindow() {
 
             // Tải HTML từ file 'anken.html' và truyền dữ liệu vào nó
             await page.goto(`file://${path.join(__dirname, 'anken.html')}`);
-            await page.evaluate((data) => {
-                document.getElementById('dataContainer').innerText = data;
-            }, dataD6.result);
+            const elements = [
+                { id: 'dataContainerA', value: dataPdf.sumTotalA },
+                { id: 'dataProcessValue', value: dataPdf.totals.totalProcessValue },
+                { id: 'dataSendValue', value: dataPdf.totals.totalSendValue },
+                { id: 'dataCaseValue', value: dataPdf.totals.totalAllCaseValue },
+                { id: 'dataUseValue', value: dataPdf.totals.totalUsevalue },
+                { id: 'dataPublicValue', value: dataPdf.totals.totalPublicValue },
+                { id: 'dataSumA', value: dataPdf.sumA },
+
+                //
+                { id: 'dataContainerB', value: dataPdf.sumTotalB },
+                { id: 'dataReceivedValue', value: dataPdf.totals.totalReceivedValue },
+                { id: 'dataReturndValue', value: dataPdf.totals.totalReturndValue },
+                { id: 'dataReceivedPublic', value: dataPdf.totals.totalReceivedPublic },
+                { id: 'dataReturndPublic', value: dataPdf.totals.totalReturndPublic },
+                { id: 'dataSumB', value: dataPdf.sumB },
+                //
+                { id: 'dataOfDate', value: dataPdf.totals.totalDate },
+
+            ];
+
+            for (const element of elements) {
+                await page.evaluate(({ id, value }) => {
+                    document.getElementById(id).innerText = value;
+                }, element);
+            }
 
 
             // In ra file PDF
@@ -129,6 +123,57 @@ async function createWindow() {
     });
 }
 
+async function caulateDataforPdf() {
+
+    let outputPath = path.join(__dirname, '年度処理件数集計ツール.xlsx');
+    const maxLength = 12;
+    const workbookRender = new ExcelJS.Workbook();
+    await workbookRender.xlsx.readFile(outputPath);
+    const worksheetRender = workbookRender.getWorksheet('出力シート');
+
+    let totals = {
+        totalDate: 0,
+        totalProcessValue: 0,
+        totalSendValue: 0,
+        totalAllCaseValue: 0,
+        totalUsevalue: 0,
+        totalPublicValue: 0,
+        totalReceivedValue: 0,
+        totalReturndValue: 0,
+        totalReceivedPublic: 0,
+        totalReturndPublic: 0
+    };
+
+    for (let index = 0; index < maxLength; index++) {
+        const values = [
+            worksheetRender.getCell(3, index + 4).value, // totalDate
+            worksheetRender.getCell(5, index + 4).value, // totalAllCaseValue
+            worksheetRender.getCell(6, index + 4).value, // totalProcessValue
+            worksheetRender.getCell(7, index + 4).value, // totalSendValue
+            worksheetRender.getCell(8, index + 4).value, // totalUsevalue
+            worksheetRender.getCell(9, index + 4).value, // totalPublicValue
+            worksheetRender.getCell(15, index + 4).value, // totalReceivedValue
+            worksheetRender.getCell(16, index + 4).value, // totalReturndValue
+            worksheetRender.getCell(17, index + 4).value, // totalReceivedPublic
+            worksheetRender.getCell(18, index + 4).value  // totalReturndPublic
+        ];
+
+        Object.keys(totals).forEach((key, i) => {
+            if (values[i] !== undefined) {
+                totals[key] += values[i];
+            }
+        });
+    }
+    // 
+    let sumA = parseInt(totals.totalUsevalue) + parseInt(totals.totalPublicValue);
+    let sumB = parseInt(totals.totalReceivedPublic) + parseInt(totals.totalReturndPublic);
+    let sumTotalA = parseInt(totals.totalProcessValue) + parseInt(totals.totalSendValue) + parseInt(totals.totalAllCaseValue)
+        + parseInt(totals.totalUsevalue) + parseInt(totals.totalPublicValue)
+    let sumTotalB = parseInt(totals.totalReceivedValue) + parseInt(totals.totalReturndValue) + parseInt(totals.totalReceivedPublic)
+        + parseInt(totals.totalReturndPublic)
+
+    return { totals, sumA, sumB, sumTotalA, sumTotalB };
+}
 
 
 async function getData(workbook) {
