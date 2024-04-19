@@ -1,0 +1,100 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 800px;
+    margin: 50px auto;
+    padding-left: 80px;
+    padding-right: 80px;
+    padding-bottom: 80px;
+    padding-top: 100px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.title {
+    margin-top: 15px;
+}
+
+.title h3 {
+    margin-top: 80px;
+    font-weight: 600;
+    font-size: 1.9rem !important;
+    font-family: auto;
+}
+
+h6 {
+    font-weight: 400;
+    font-size: 1.1rem !important;
+}
+
+.total_number {
+    margin-top: 50px;
+    margin-bottom: 40px;
+}
+
+.total_number h5 {
+    font-weight: bold;
+    font-size: 1.45rem !important;
+}
+
+.total_number h5 p {
+    font-weight: bold;
+    font-size: 1.6rem !important;
+}
+
+.year {
+    font-size: 27px;
+    font-weight: bold !important;
+    font-family: auto;
+}
+
+.title_year {
+    font-size: 20px;
+    padding-top: 7px;
+}
+
+.title_year h4 {
+    font-weight: 600 !important;
+}
+
+.title_total {
+    margin-left: 50px;
+}
+
+.title_total_numer {
+    font-size: 20px;
+    padding-top: 7px;
+    font-weight: 600 !important;
+}
+
+.title_total_numer h4 {
+    font-weight: 600 !important;
+    border-bottom: 1px solid black;
+}
+
+
+.text-container {
+    /* width: 60%; */
+    /* margin: auto; */
+}
+
+.item-label {
+    font-size: 20px;
+}
+
+.item-value {
+    font-size: 22px;
+    /* border-bottom: 1px solid black; */
+    display: inline-block;
+    margin-left: 27px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.total_date {
+    margin-top: 20px;
+}

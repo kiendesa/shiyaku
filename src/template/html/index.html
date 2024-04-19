@@ -5,16 +5,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Electron App</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
     <div class="container">
-        <h1>Choose Directory</h1>
+        <h1 style="background-color: aqua;">Choose Directory</h1>
         <input type="file" id="directoryInput" webkitdirectory directory>
+        <div>
+             <button id="printPDFButton">Print PDF</button>
+        </div>
         <div id="folder-path"></div>
+
     </div>
-     <div id="excelValueContainer"></div>
-     <script src="./preload.js"></script>
+     <div style="color: brown;" id="excelValueContainer"></div>
+     <script src="../../middle/preload.js"></script>
     <script src="./renserer.js"></script>
 </body>
 </html>

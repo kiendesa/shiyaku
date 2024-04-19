@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <title>Electron App</title>
+    <link rel="stylesheet" href="../css/anken.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header row">
+            <div class="col-md-12">
+                <h6>北区役所</h6>
+                <h6>戸籍住民課　戸籍住民係 御中</h6>
+            </div>
+             <div class="col-md-12 text-right">
+                <h6>株式会社　電算　　　　</h6>
+                <h6><strong>IT</strong>　ソリューション本部</h6>
+                <h6>　ソリューション２部　　</h6>
+            </div>
+            <div class="title col-md-12 text-center"><h3>2023 年度　処理実績報告</h3></div>
+            <div class="col-md-12 d-flex total_number">
+                <div class="d-flex">
+                    <div  class="year">2023</div>
+                    <div class="title_year"><h4> 年度　戸籍等処理実績</h4></div> 
+                </div>
+                <div class="d-flex title_total">
+                    <div class="title_total_numer"><h4>総件数　　　</h4></div>
+                    <div class="title_total_numer"><h4 id="dataContainerA"></h4></div>
+                    <div class="title_total_numer"><h4>件</h4></div>
+                </div>
+            </div>
+            <div class="col-md-12 text-container">
+                <div class="item">
+                    <div class="item-label">① 届出処理業務</div>
+                    <div class="item-value d-flex">
+                        <div style="border-bottom: 1px solid black;" class="dataEvent" id="dataProcessValue"></div>
+                        <div style="border-bottom: 1px solid black;">　 件 （送付分のみ）</div>
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="item-label">② 人口動態処理業務</div>
+                    <div class="item-value d-flex">
+                        <div style="border-bottom: 1px solid black;" class="dataEvent" id="dataSendValue"></div>
+                        <div style="border-bottom: 1px solid black;">　 件 （全件）</div>
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="item-label">③ 附表関連処理業務</div>
+                    <div class="item-value d-flex">
+                        <div style="border-bottom: 1px solid black;" class="dataEvent" id="dataCaseValue"></div>
+                        <div style="border-bottom: 1px solid black;">　 件 </div>
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="item-label">④ 郵送による戸籍証明書の交付に係る業務（戸籍・除籍・身分証明書・独身証明書・附票）</div>
+                    <div class="item-value d-flex">
+                        <div style="border-bottom: 1px solid black;" class="dataEvent" id="dataSumA"></div>
+                        <div style="border-bottom: 1px solid black;">　 件 </div>
+                        <div style="border-bottom: 1px solid black;" class="d-flex">（ 一般　<div id="dataUseValue"></div>　件 公用　<div id="dataPublicValue"></div>　件）</div>
+                    </div>
+                </div>
+            </div>
+            <!--\\\\\\\\\\\\\\\\\\\\\\\\\\\\-->
+            <div class="col-md-12 d-flex total_number">
+                <div class="d-flex">
+                    <div  class="year">2023</div>
+                    <div class="title_year"><h4>　年度　住民票の写しの交付実績</h4></div> 
+                </div>
+                <div class="d-flex title_total">
+                    <div class="title_total_numer"><h4>総件数　　　</h4></div>
+                    <div class="title_total_numer"><h4 id="dataContainerB"></h4></div>
+                    <div class="title_total_numer"><h4>件</h4></div>
+                </div>
+            </div>
+            <div class="col-md-12 text-container">
+                <div class="item">
+                    <div class="item-label">① 一般請求分</div>
+                    <div class="item-value d-flex">
+                        <div style="border-bottom: 1px solid black;" class="dataEvent" id="dataReceivedValue"></div>
+                        <div style="border-bottom: 1px solid black;">　 件 （送付分のみ）</div>
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="item-label">② 公用請求分</div>
+                    <div class="item-value d-flex">
+                        <div style="border-bottom: 1px solid black;" class="dataEvent" id="dataReturndValue"></div>
+                        <div style="border-bottom: 1px solid black;">　 件 （全件）</div>
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="item-label">③ 転出届郵送 ※職員様が対応</div>
+                    <div class="item-value d-flex">
+                        <div style="border-bottom: 1px solid black;" class="dataEvent">0　</div>
+                        <div style="border-bottom: 1px solid black;"> 件 </div>
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="item-label">④ 郵送住民票返戻（該当なし）</div>
+                    <div class="item-value d-flex">
+                        <div style="border-bottom: 1px solid black;" class="dataEvent" id="dataSumB">　</div>
+                        <div style="border-bottom: 1px solid black;" class="d-flex">　　件　　　（送付分のみ、　　一般　　<div id="dataReceivedPublic"></div>　件 公用　<div id="dataReturndPublic"></div>　件）</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12 d-flex justify-content-end total_date">
+                <div>※ 年度営業日： </div>
+                <div id="dataOfDate">182</div>
+                <div>日</div>
+            </div>
+        </div>
+    </div>
+   
+    <script src="./preload.js"></script>
+    <script src="./renserer.js"></script>
+</body>
+</html>
