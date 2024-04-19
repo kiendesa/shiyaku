@@ -26,7 +26,6 @@ document.getElementById('printPDFButton').addEventListener('click', () => {
 });
 
 
-
 // Lắng nghe sự kiện reply từ main process để nhận dữ liệu Excel và hiển thị
 ipcRenderer.on('excelData', (event, cellValue) => {
     console.log("Data from Excel:", cellValue);
