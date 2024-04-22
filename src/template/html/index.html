@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 
 <head>
     <meta charset="UTF-8">
@@ -9,16 +9,77 @@
 </head>
 <body>
     <div class="container">
-        <h1 style="background-color: aqua;">Choose Directory</h1>
-        <input type="file" id="directoryInput" webkitdirectory directory>
-        <div>
-             <button id="printPDFButton">Print PDF</button>
+        <h1> 年度 処理実績報告</h1>
+         <div>
+            <button class="button_choosen" onclick="document.getElementById('directoryInput').click()">選択フォルダ</button>
+            <input  id="directoryInput" type='file' style="display:none" webkitdirectory directory>
         </div>
         <div id="folder-path"></div>
-
+        <h1>対象ファイル</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>集計月</th>
+                    <th>対象ファイル</th>
+                </tr>
+            </thead>
+            <tbody id="file-list">
+                <tr>
+                    <td>4月</td>
+                    <td id="4_month"></td>
+                </tr>
+                <tr>
+                    <td>5月</td>
+                    <td id="5_month"></td>
+                </tr>
+                <tr>
+                    <td>6月</td>
+                    <td id="6_month"></td>
+                </tr>
+                <tr>
+                    <td>7月</td>
+                    <td id="7_month"></td>
+                </tr>
+                <tr>
+                    <td>8月</td>
+                    <td id="8_month"></td>
+                </tr>
+                <tr>
+                    <td>9月</td>
+                    <td id="9_month"></td>
+                </tr>
+                <tr>
+                    <td>10月</td>
+                    <td id="10_month"></td>
+                </tr>
+                <tr>
+                    <td>11月</td>
+                    <td id="11_month"></td>
+                </tr>
+                <tr>
+                    <td>12月</td>
+                    <td id="12_month"></td>
+                </tr>
+                <tr>
+                    <td>1月</td>
+                    <td id="13_month"></td>
+                </tr>
+                <tr>
+                    <td>2月</td>
+                    <td id="14_month"></td>
+                </tr>
+                <tr>
+                    <td>3月</td>
+                    <td id="15_month"></td>
+                </tr>
+            </tbody>
+        </table>
+        <div>
+             <button id="printPDFButton">PDFの印刷</button>
+        </div>
     </div>
      <div style="color: brown;" id="excelValueContainer"></div>
      <script src="../../middle/preload.js"></script>
-    <script src="./renserer.js"></script>
+     <script src="./renserer.js"></script>
 </body>
 </html>

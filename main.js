@@ -26,8 +26,8 @@ ipcMain.on('readExcelData', async (event, filePaths) => {
 });
 
 // PDFにデータを書き込む
-ipcMain.on('printPDF', async (event) => {
-    await printPDF(event);
+ipcMain.on('printPDF', async (event, year) => {
+    await printPDF(event, year);
 });
 
 app.on('window-all-closed', () => {

@@ -11,9 +11,10 @@ const maxLength = 12;
 
 module.exports = async function readExcelData(event, filePaths) {
     try {
+
         for (let index = 0; index < filePaths.length; index++) {
             console.log("index", filePaths.length);
-
+            event.reply('showFile', filePaths[index], index);
             /*ーーーーー取得データ関数ーーーーーー*/
             // オリジナルのエクセルを読み込み
             const workbookData = new ExcelJS.Workbook();
@@ -30,8 +31,6 @@ module.exports = async function readExcelData(event, filePaths) {
             // データを年度処理件数集計ツール.xlsxにの出力シートに書き込みます
             await newWorkbook.xlsx.writeFile(outputPath);
             console.log('susscess....');
-            event.reply('excelDataWritten', outputPath);
-            // event.reply('excelData', data);
         }
         if (filePaths.length < 12) {
             const lengthFile = maxLength - filePaths.length

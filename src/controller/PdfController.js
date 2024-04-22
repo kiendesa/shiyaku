@@ -8,7 +8,7 @@ require('dotenv').config();
 const outputPath = path.join(__dirname, '..', '..', process.env.EXCEL_FILE_PATH);
 const maxLength = 12;
 
-module.exports = async function printPDF(event) {
+module.exports = async function printPDF(event, year) {
 
     try {
 
@@ -23,6 +23,9 @@ module.exports = async function printPDF(event) {
         //　HTMLファイルにデータを書き込むこと
         await page.goto(`file://${path.join(__dirname, '../template/html/anken.html')}`);
         const elements = [
+            //年度
+            { id: 'year_tile', value: year },
+            { id: 'year', value: year },
 
             // PDFの上のデータ
             { id: 'dataContainerA', value: dataPdf.sumTotalA },
@@ -54,7 +57,7 @@ module.exports = async function printPDF(event) {
 
 
         // PDFを印刷すること
-        const pdfPath = path.join(__dirname, '..', '..', 'pdf', 'output.pdf');
+        const pdfPath = path.join(__dirname, '..', '..', 'pdf', `${year}_年度.pdf`);
         await page.pdf({ path: pdfPath, format: 'A4', printBackground: true });
 
         console.log('PDF created:', pdfPath);
