@@ -94,8 +94,11 @@ async function getData(workbook) {
 
     /*ーーーーー戸籍集計報告・グラフ【公用】ーーーーーー*/
     const worksheetPublic = workbook.getWorksheet('戸籍集計報告・グラフ【公用】');
-    let lastPulicColumn = worksheetPublic.getColumn(1).values.length;
-    const publicValue = worksheetPublic.getCell('Z' + lastPulicColumn).value;
+    let lastUseColumnPublic = worksheetPublic.getRow(6).actualCellCount + 1;
+    let lastUseRowPublic = worksheetPublic.getColumn(lastUseColumnPublic).values.length - 1;
+    const publicValue = worksheetPublic.getCell(lastUseRowPublic, lastUseColumnPublic).value;
+    // let lastPulicColumn = worksheetPublic.getColumn(1).values.length;
+    // const publicValue = worksheetPublic.getCell('Z' + lastPulicColumn).value;
 
     /*ーーーーー住民票集計報告ーーーーーーー*/
     const worksheetReport = workbook.getWorksheet('住民票集計報告');
@@ -109,9 +112,18 @@ async function getData(workbook) {
     //④ 郵送住民票返戻（該当なし）（送付分のみ）一般
     const returnValue2 = worksheetReport.getCell('P' + lastRowRport).value;
 
-    return [countDate, sendValue.result, allCaseValue, processValue.result,
-        useValue.result, publicValue.result, receivedValue2.result,
-        receivedValue.result, returnValue2.result, returnValue.result]
+    return [
+        countDate,
+        sendValue.result,
+        allCaseValue,
+        processValue.result,
+        useValue.result,
+        publicValue.result,
+        receivedValue2.result,
+        receivedValue.result,
+        returnValue2.result,
+        returnValue.result
+    ]
 }
 
 async function saveFile(newWorkbook, outputPath) {

@@ -6,12 +6,12 @@ document.getElementById('directoryInput').addEventListener('change', function (e
     const fileList = event.target.files;
 
     if (fileList.length > 0) {
-        const fileExtensions = [".xls", ".xlsx", ".xlsm"]; // Các phần mở rộng của tệp Excel
+        const fileExtensions = [".xls", ".xlsx", ".xlsm"]; // ExcelのExtension
         let isValid = true;
 
         for (let i = 0; i < fileList.length; i++) {
             const fileName = fileList[i].name;
-            const fileExtension = fileName.slice((fileName.lastIndexOf(".") - 1 >>> 0) + 2).toLowerCase(); // Lấy phần mở rộng của tệp
+            const fileExtension = fileName.slice((fileName.lastIndexOf(".") - 1 >>> 0) + 2).toLowerCase(); // ExcelのExtensionを取る
 
             if (!fileExtensions.includes("." + fileExtension)) {
                 isValid = false;
@@ -29,7 +29,7 @@ document.getElementById('directoryInput').addEventListener('change', function (e
             for (let index = 0; index < 12; index++) {
                 document.getElementById(`${index + 4}_month`).innerText = ''
             }
-            // Gửi yêu cầu đọc dữ liệu từ file Excel đến main process
+            // Excelファイルからデータを読み取るリクエストをメインプロセスに送信します。
             ipcRenderer.send('readExcelData', filePaths);
 
         } else {
@@ -47,8 +47,13 @@ document.getElementById('printPDFButton').addEventListener('click', () => {
     ipcRenderer.send('printPDF', year);
 });
 
-
-// Lắng nghe sự kiện reply từ main process để nhận dữ liệu Excel và hiển thị
+// メインプロセスからの応答イベントをリッスンして Excel データを受信し、表示します
 ipcRenderer.on('showFile', (event, filePaths, index) => {
     document.getElementById(`${index + 4}_month`).innerText = filePaths ? path.basename(filePaths) : '';
 });
+
+// メインプロセスからの応答イベントをリッスンして Excel データを受信し、表示します
+ipcRenderer.on('notifySuceess', (event) => {
+    alert("PDFファイルを作成しました。");
+});
+

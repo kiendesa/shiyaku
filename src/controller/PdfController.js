@@ -61,6 +61,7 @@ module.exports = async function printPDF(event, year) {
         await page.pdf({ path: pdfPath, format: 'A4', printBackground: true });
 
         console.log('PDF created:', pdfPath);
+        event.reply('notifySuceess');
 
         // ブラウザが閉まる
         await browser.close();
