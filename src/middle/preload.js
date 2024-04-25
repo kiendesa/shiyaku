@@ -2,8 +2,9 @@ const { ipcRenderer } = require('electron');
 const path = require('path');
 
 let year = 0;
+let fileList = [];
 document.getElementById('directoryInput').addEventListener('change', function (event) {
-    const fileList = event.target.files;
+    fileList = event.target.files;
 
     if (fileList.length > 0) {
         const fileExtensions = [".xls", ".xlsx", ".xlsm"]; // ExcelのExtension
@@ -44,7 +45,11 @@ document.getElementById('directoryInput').addEventListener('change', function (e
 
 document.getElementById('printPDFButton').addEventListener('click', () => {
     // IPC経由でメインプロセスにリクエストを送信
-    ipcRenderer.send('printPDF', year);
+    if (fileList.length == 0) {
+        alert("Excelのフォルダを選んでください。");
+    } else {
+        ipcRenderer.send('printPDF', year);
+    }
 });
 
 // メインプロセスからの応答イベントをリッスンして Excel データを受信し、表示します
@@ -55,16 +60,6 @@ ipcRenderer.on('showFile', (event, filePaths, index) => {
 // メインプロセスからの応答イベントをリッスンして Excel データを受信し、表示します
 ipcRenderer.on('notifySuceess', (event) => {
     alert("PDFファイルを作成しました。");
-});
-
-
-ipcRenderer.on('truoc', (event, htmlFile, outputPath) => {
-    console.log("trc", htmlFile, outputPath);
-});
-
-
-ipcRenderer.on('sau', (event) => {
-    console.log("sau");
 });
 
 

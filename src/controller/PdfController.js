@@ -4,7 +4,8 @@ const ExcelJS = require('exceljs');
 const puppeteer = require('puppeteer');
 require('dotenv').config();
 const fs = require('fs');
-
+const { exec } = require('child_process');
+const os = require('os');
 
 //データを保存するファイルのURL
 const outputPath = path.join(__dirname, '..', '..', '年度処理件数集計ツール.xlsx');
@@ -23,10 +24,6 @@ module.exports = async function printPDF(event, year) {
         const page = await browser.newPage();
 
         //　HTMLファイルにデータを書き込むこと
-
-        // const htmlFile = path.join(app.getAppPath(), 'src/template/html/anken.html');
-
-        // Đọc nội dung của tệp HTML
         const htmlFilePath = path.join(app.getAppPath(), 'src/template/html/anken.html');
         const htmlContent = fs.readFileSync(htmlFilePath, 'utf8');
 
@@ -44,6 +41,7 @@ module.exports = async function printPDF(event, year) {
             //年度   
             { id: 'year_tile', value: year },
             { id: 'year', value: year },
+             { id: 'yeartwo', value: year },
 
             // PDFの上のデータ
             { id: 'dataContainerA', value: dataPdf.sumTotalA },
@@ -79,6 +77,7 @@ module.exports = async function printPDF(event, year) {
         await page.pdf({ path: pdfPath, format: 'A4', printBackground: true });
 
         console.log('PDF created:', pdfPath);
+        openPdf(pdfPath);
         event.reply('notifySuceess');
 
         // ブラウザが閉まる
@@ -88,6 +87,15 @@ module.exports = async function printPDF(event, year) {
     }
 };
 
+function openPdf(pdfPath) {
+    if (os.platform() === 'win32' || os.platform() === 'win64') {
+        exec(`start ${pdfPath}`);
+    } else if (os.platform() === 'darwin') {
+        exec(`open ${pdfPath}`);
+    } else {
+        exec(`xdg-open ${pdfPath}`);
+    }
+}
 
 async function caulateDataforPdf() {
 

@@ -10,7 +10,9 @@
   },
   "author": "kiendesa",
   "license": "MIT",
-   "build": {
+  "build": {
+    "productName": "Electron for me",
+    "copyright": "Copyright 2020 KienDesa Software.",
     "appId": "com.example.my-electron-app"
   },
   "devDependencies": {
@@ -22,6 +24,7 @@
     "electron-reload": "^2.0.0-alpha.1",
     "exceljs": "^4.4.0",
     "html-pdf": "^3.0.1",
+    "open": "^10.1.0",
     "puppeteer": "^22.6.5",
     "sheetjs": "^1.0.21",
     "xlsx": "^0.18.5",
