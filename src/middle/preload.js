@@ -57,3 +57,16 @@ ipcRenderer.on('notifySuceess', (event) => {
     alert("PDFファイルを作成しました。");
 });
 
+
+ipcRenderer.on('truoc', (event, htmlFile, outputPath) => {
+    console.log("trc", htmlFile, outputPath);
+});
+
+
+ipcRenderer.on('sau', (event) => {
+    console.log("sau");
+});
+
+
+
+

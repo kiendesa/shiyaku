@@ -1,11 +1,13 @@
-const { BrowserWindow, ipcMain } = require('electron');
+const { BrowserWindow, ipcMain, app } = require('electron');
 const path = require('path');
 const ExcelJS = require('exceljs');
 const puppeteer = require('puppeteer');
 require('dotenv').config();
+const fs = require('fs');
+
 
 //データを保存するファイルのURL
-const outputPath = path.join(__dirname, '..', '..', process.env.EXCEL_FILE_PATH);
+const outputPath = path.join(__dirname, '..', '..', '年度処理件数集計ツール.xlsx');
 const maxLength = 12;
 
 module.exports = async function printPDF(event, year) {
@@ -21,9 +23,25 @@ module.exports = async function printPDF(event, year) {
         const page = await browser.newPage();
 
         //　HTMLファイルにデータを書き込むこと
-        await page.goto(`file://${path.join(__dirname, '../template/html/anken.html')}`);
+
+        // const htmlFile = path.join(app.getAppPath(), 'src/template/html/anken.html');
+
+        // Đọc nội dung của tệp HTML
+        const htmlFilePath = path.join(app.getAppPath(), 'src/template/html/anken.html');
+        const htmlContent = fs.readFileSync(htmlFilePath, 'utf8');
+
+        const cssFilePath = path.join(app.getAppPath(), 'src/template/css/anken.css');
+        const cssContent = fs.readFileSync(cssFilePath, 'utf8');
+
+        await page.setContent(htmlContent, { waitUntil: 'domcontentloaded' });
+        await page.addStyleTag({ content: cssContent });
+
+        event.reply('truoc', htmlFilePath, outputPath);
+        // await page.goto(`file://${htmlFile}`);
+        event.reply('sau');
+
         const elements = [
-            //年度
+            //年度   
             { id: 'year_tile', value: year },
             { id: 'year', value: year },
 
@@ -57,7 +75,7 @@ module.exports = async function printPDF(event, year) {
 
 
         // PDFを印刷すること
-        const pdfPath = path.join(__dirname, '..', '..', 'pdf', `${year}_年度.pdf`);
+        const pdfPath = path.join(app.getPath('downloads'), `${year}_年度.pdf`);
         await page.pdf({ path: pdfPath, format: 'A4', printBackground: true });
 
         console.log('PDF created:', pdfPath);
