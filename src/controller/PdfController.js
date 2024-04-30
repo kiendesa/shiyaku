@@ -6,6 +6,8 @@ require('dotenv').config();
 const fs = require('fs');
 const { exec } = require('child_process');
 const os = require('os');
+const handlebars = require('handlebars');
+
 
 //データを保存するファイルのURL
 const outputPath = path.join(__dirname, '..', '..', '年度処理件数集計ツール.xlsx');
@@ -27,50 +29,14 @@ module.exports = async function printPDF(event, year) {
         const htmlFilePath = path.join(app.getAppPath(), 'src/template/html/anken.html');
         const htmlContent = fs.readFileSync(htmlFilePath, 'utf8');
 
+        const template = handlebars.compile(htmlContent);
+        const renderedHtml = template({ dataPdf, year });
+
         const cssFilePath = path.join(app.getAppPath(), 'src/template/css/anken.css');
         const cssContent = fs.readFileSync(cssFilePath, 'utf8');
 
-        await page.setContent(htmlContent, { waitUntil: 'domcontentloaded' });
+        await page.setContent(renderedHtml, { waitUntil: 'domcontentloaded' });
         await page.addStyleTag({ content: cssContent });
-
-        event.reply('truoc', htmlFilePath, outputPath);
-        // await page.goto(`file://${htmlFile}`);
-        event.reply('sau');
-
-        const elements = [
-            //年度   
-            { id: 'year_tile', value: year },
-            { id: 'year', value: year },
-             { id: 'yeartwo', value: year },
-
-            // PDFの上のデータ
-            { id: 'dataContainerA', value: dataPdf.sumTotalA },
-            { id: 'dataProcessValue', value: dataPdf.totals.totalProcessValue },
-            { id: 'dataSendValue', value: dataPdf.totals.totalSendValue },
-            { id: 'dataCaseValue', value: dataPdf.totals.totalAllCaseValue },
-            { id: 'dataUseValue', value: dataPdf.totals.totalUsevalue },
-            { id: 'dataPublicValue', value: dataPdf.totals.totalPublicValue },
-            { id: 'dataSumA', value: dataPdf.sumA },
-
-            //　PDFの下のデータ
-            { id: 'dataContainerB', value: dataPdf.sumTotalB },
-            { id: 'dataReceivedValue', value: dataPdf.totals.totalReceivedValue },
-            { id: 'dataReturndValue', value: dataPdf.totals.totalReturndValue },
-            { id: 'dataReceivedPublic', value: dataPdf.totals.totalReceivedPublic },
-            { id: 'dataReturndPublic', value: dataPdf.totals.totalReturndPublic },
-            { id: 'dataSumB', value: dataPdf.sumB },
-            //　日
-            { id: 'dataOfDate', value: dataPdf.totals.totalDate },
-
-        ];
-
-        // idに対応するデータを割り当てる
-        for (const element of elements) {
-            await page.evaluate(({ id, value }) => {
-                document.getElementById(id).innerText = value;
-            }, element);
-        }
-
 
         // PDFを印刷すること
         const pdfPath = path.join(app.getPath('downloads'), `${year}_年度.pdf`);

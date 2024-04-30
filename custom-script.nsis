@@ -1,0 +1,43 @@
+!include "MUI2.nsh"
+
+; Define variables
+!define APP_NAME "年度集計ツール"
+!define APP_EXE "年度集計ツール.exe" ; Tên tập tin thực thi của ứng dụng Electron
+!define APP_PUBLISHER "Copyright 2020 KienDesa Software."
+!define APP_VERSION "1.0" ; Phiên bản của ứng dụng
+
+; MUI Settings
+!define MUI_ABORTWARNING
+!insertmacro MUI_PAGE_WELCOME
+!insertmacro MUI_PAGE_DIRECTORY
+!insertmacro MUI_PAGE_INSTFILES
+!insertmacro MUI_PAGE_FINISH
+!insertmacro MUI_LANGUAGE "English"
+
+; General setup
+Name "${APP_NAME}"
+OutFile "${APP_NAME}_Setup.exe"
+InstallDir "$PROGRAMFILES\${APP_NAME}"
+ShowInstDetails show
+
+; Pages
+!define MUI_FINISHPAGE_RUN "$INSTDIR\${APP_EXE}"
+
+; Sections
+Section
+    SetOutPath "$INSTDIR"
+    File /r "app\*.*" ; Copy all files from the "app" directory
+SectionEnd
+
+; Uninstaller
+Section "Uninstall"
+    Delete "$INSTDIR\${APP_EXE}"
+    RMDir "$INSTDIR"
+SectionEnd
+
+; Create Shortcut on Start Menu and Desktop
+Section "CreateShortcuts"
+    CreateDirectory "$SMPROGRAMS\${APP_NAME}" ; Create Start Menu folder
+    CreateShortCut "$SMPROGRAMS\${APP_NAME}\${APP_NAME}.lnk" "$INSTDIR\${APP_EXE}" "" "" "" ; Create Shortcut in Start Menu
+    CreateShortCut "$DESKTOP\${APP_NAME}.lnk" "$INSTDIR\${APP_EXE}" "" "" "" ; Create Shortcut on Desktop
+SectionEnd
