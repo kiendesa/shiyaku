@@ -1,11 +1,16 @@
-const { BrowserWindow, ipcMain } = require('electron');
+const { BrowserWindow, ipcMain, app } = require('electron');
 const path = require('path');
 const ExcelJS = require('exceljs');
 const puppeteer = require('puppeteer');
 require('dotenv').config();
+const fs = require('fs');
+const { exec } = require('child_process');
+const os = require('os');
+const handlebars = require('handlebars');
+
 
 //データを保存するファイルのURL
-const outputPath = path.join(__dirname, '..', '..', process.env.EXCEL_FILE_PATH);
+const outputPath = path.join(__dirname, '..', '..', '年度処理件数集計ツール.xlsx');
 const maxLength = 12;
 
 module.exports = async function printPDF(event, year) {
@@ -21,46 +26,24 @@ module.exports = async function printPDF(event, year) {
         const page = await browser.newPage();
 
         //　HTMLファイルにデータを書き込むこと
-        await page.goto(`file://${path.join(__dirname, '../template/html/anken.html')}`);
-        const elements = [
-            //年度
-            { id: 'year_tile', value: year },
-            { id: 'year', value: year },
+        const htmlFilePath = path.join(app.getAppPath(), 'src/template/html/anken.html');
+        const htmlContent = fs.readFileSync(htmlFilePath, 'utf8');
 
-            // PDFの上のデータ
-            { id: 'dataContainerA', value: dataPdf.sumTotalA },
-            { id: 'dataProcessValue', value: dataPdf.totals.totalProcessValue },
-            { id: 'dataSendValue', value: dataPdf.totals.totalSendValue },
-            { id: 'dataCaseValue', value: dataPdf.totals.totalAllCaseValue },
-            { id: 'dataUseValue', value: dataPdf.totals.totalUsevalue },
-            { id: 'dataPublicValue', value: dataPdf.totals.totalPublicValue },
-            { id: 'dataSumA', value: dataPdf.sumA },
+        const template = handlebars.compile(htmlContent);
+        const renderedHtml = template({ dataPdf, year });
 
-            //　PDFの下のデータ
-            { id: 'dataContainerB', value: dataPdf.sumTotalB },
-            { id: 'dataReceivedValue', value: dataPdf.totals.totalReceivedValue },
-            { id: 'dataReturndValue', value: dataPdf.totals.totalReturndValue },
-            { id: 'dataReceivedPublic', value: dataPdf.totals.totalReceivedPublic },
-            { id: 'dataReturndPublic', value: dataPdf.totals.totalReturndPublic },
-            { id: 'dataSumB', value: dataPdf.sumB },
-            //　日
-            { id: 'dataOfDate', value: dataPdf.totals.totalDate },
+        const cssFilePath = path.join(app.getAppPath(), 'src/template/css/anken.css');
+        const cssContent = fs.readFileSync(cssFilePath, 'utf8');
 
-        ];
-
-        // idに対応するデータを割り当てる
-        for (const element of elements) {
-            await page.evaluate(({ id, value }) => {
-                document.getElementById(id).innerText = value;
-            }, element);
-        }
-
+        await page.setContent(renderedHtml, { waitUntil: 'domcontentloaded' });
+        await page.addStyleTag({ content: cssContent });
 
         // PDFを印刷すること
-        const pdfPath = path.join(__dirname, '..', '..', 'pdf', `${year}_年度.pdf`);
+        const pdfPath = path.join(app.getPath('downloads'), `${year}_年度.pdf`);
         await page.pdf({ path: pdfPath, format: 'A4', printBackground: true });
 
         console.log('PDF created:', pdfPath);
+        openPdf(pdfPath);
         event.reply('notifySuceess');
 
         // ブラウザが閉まる
@@ -70,6 +53,15 @@ module.exports = async function printPDF(event, year) {
     }
 };
 
+function openPdf(pdfPath) {
+    if (os.platform() === 'win32' || os.platform() === 'win64') {
+        exec(`start ${pdfPath}`);
+    } else if (os.platform() === 'darwin') {
+        exec(`open ${pdfPath}`);
+    } else {
+        exec(`xdg-open ${pdfPath}`);
+    }
+}
 
 async function caulateDataforPdf() {
 

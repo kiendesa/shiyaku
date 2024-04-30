@@ -5,7 +5,7 @@ const ExcelJS = require('exceljs');
 require('dotenv').config();
 
 //データを保存するファイルのURL
-const outputPath = path.join(__dirname, '..', '..', process.env.EXCEL_FILE_PATH);
+const outputPath = path.join(__dirname, '..', '..', '年度処理件数集計ツール.xlsx');
 const maxLength = 12;
 
 

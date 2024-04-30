@@ -23,12 +23,12 @@
             <div class="title col-md-12 justify-content-center d-flex"><h3 id="year_tile"></h3> <h3>　年度　処理実績報告</h3></div>
             <div class="col-md-12 d-flex total_number">
                 <div class="d-flex">
-                    <div id="year" class="year"></div>
-                    <div class="title_year"><h4> 年度　戸籍等処理実績</h4></div> 
+                    <div id="year" class="year">{{year}}</div>
+                    <div class="title_year"><h4>　年度　戸籍等処理実績</h4></div> 
                 </div>
                 <div class="d-flex title_total">
                     <div class="title_total_numer"><h4>総件数　　　</h4></div>
-                    <div class="title_total_numer"><h4 id="dataContainerA"></h4></div>
+                    <div class="title_total_numer"><h4 id="dataContainerA">{{dataPdf.sumTotalA}}</h4></div>
                     <div class="title_total_numer"><h4>件</h4></div>
                 </div>
             </div>
@@ -36,42 +36,42 @@
                 <div class="item">
                     <div class="item-label">① 届出処理業務</div>
                     <div class="item-value d-flex">
-                        <div style="border-bottom: 1px solid black;" class="dataEvent" id="dataProcessValue"></div>
+                        <div style="border-bottom: 1px solid black;" class="dataEvent" id="dataProcessValue">{{dataPdf.totals.totalProcessValue}}</div>
                         <div style="border-bottom: 1px solid black;">　 件 （送付分のみ）</div>
                     </div>
                 </div>
                 <div class="item">
                     <div class="item-label">② 人口動態処理業務</div>
                     <div class="item-value d-flex">
-                        <div style="border-bottom: 1px solid black;" class="dataEvent" id="dataSendValue"></div>
+                        <div style="border-bottom: 1px solid black;" class="dataEvent" id="dataSendValue">{{dataPdf.totals.totalSendValue}}</div>
                         <div style="border-bottom: 1px solid black;">　 件 （全件）</div>
                     </div>
                 </div>
                 <div class="item">
                     <div class="item-label">③ 附表関連処理業務</div>
                     <div class="item-value d-flex">
-                        <div style="border-bottom: 1px solid black;" class="dataEvent" id="dataCaseValue"></div>
+                        <div style="border-bottom: 1px solid black;" class="dataEvent" id="dataCaseValue">{{dataPdf.totals.totalAllCaseValue}}</div>
                         <div style="border-bottom: 1px solid black;">　 件 </div>
                     </div>
                 </div>
                 <div class="item">
                     <div class="item-label">④ 郵送による戸籍証明書の交付に係る業務（戸籍・除籍・身分証明書・独身証明書・附票）</div>
                     <div class="item-value d-flex">
-                        <div style="border-bottom: 1px solid black;" class="dataEvent" id="dataSumA"></div>
+                        <div style="border-bottom: 1px solid black;" class="dataEvent" id="dataSumA">{{dataPdf.sumA}}</div>
                         <div style="border-bottom: 1px solid black;">　 件 </div>
-                        <div style="border-bottom: 1px solid black;" class="d-flex">（ 一般　<div id="dataUseValue"></div>　件 公用　<div id="dataPublicValue"></div>　件）</div>
+                        <div style="border-bottom: 1px solid black;" class="d-flex">（ 一般　<div id="dataUseValue">{{dataPdf.totals.totalUsevalue}}</div>　件 公用　<div id="dataPublicValue">{{dataPdf.totals.totalPublicValue}}</div>　件）</div>
                     </div>
                 </div>
             </div>
             <!--\\\\\\\\\\\\\\\\\\\\\\\\\\\\-->
             <div class="col-md-12 d-flex total_number">
                 <div class="d-flex">
-                    <div  class="year">2023</div>
+                    <div id="yeartwo"  class="year">{{year}}</div>
                     <div class="title_year"><h4>　年度　住民票の写しの交付実績</h4></div> 
                 </div>
                 <div class="d-flex title_total">
                     <div class="title_total_numer"><h4>総件数　　　</h4></div>
-                    <div class="title_total_numer"><h4 id="dataContainerB"></h4></div>
+                    <div class="title_total_numer"><h4 id="dataContainerB">{{dataPdf.sumTotalB}}</h4></div>
                     <div class="title_total_numer"><h4>件</h4></div>
                 </div>
             </div>
@@ -79,14 +79,14 @@
                 <div class="item">
                     <div class="item-label">① 一般請求分</div>
                     <div class="item-value d-flex">
-                        <div style="border-bottom: 1px solid black;" class="dataEvent" id="dataReceivedValue"></div>
+                        <div style="border-bottom: 1px solid black;" class="dataEvent" id="dataReceivedValue">{{dataPdf.totals.totalReceivedValue}}</div>
                         <div style="border-bottom: 1px solid black;">　 件 （送付分のみ）</div>
                     </div>
                 </div>
                 <div class="item">
                     <div class="item-label">② 公用請求分</div>
                     <div class="item-value d-flex">
-                        <div style="border-bottom: 1px solid black;" class="dataEvent" id="dataReturndValue"></div>
+                        <div style="border-bottom: 1px solid black;" class="dataEvent" id="dataReturndValue">{{dataPdf.totals.totalReturndValue}}</div>
                         <div style="border-bottom: 1px solid black;">　 件 （全件）</div>
                     </div>
                 </div>
@@ -100,20 +100,19 @@
                 <div class="item">
                     <div class="item-label">④ 郵送住民票返戻（該当なし）</div>
                     <div class="item-value d-flex">
-                        <div style="border-bottom: 1px solid black;" class="dataEvent" id="dataSumB">　</div>
-                        <div style="border-bottom: 1px solid black;" class="d-flex">　　件　　　（送付分のみ、　　一般　　<div id="dataReceivedPublic"></div>　件 公用　<div id="dataReturndPublic"></div>　件）</div>
+                        <div style="border-bottom: 1px solid black;" class="dataEvent" id="dataSumB">　{{dataPdf.sumB}}</div>
+                        <div style="border-bottom: 1px solid black;" class="d-flex">　　件　　　（送付分のみ、　　一般　　<div id="dataReceivedPublic">{{dataPdf.totals.totalReceivedPublic}}</div>　件 公用　<div id="dataReturndPublic">{{dataPdf.totals.totalReturndPublic}}</div>　件）</div>
                     </div>
                 </div>
             </div>
             <div class="col-md-12 d-flex justify-content-end total_date">
                 <div>※ 年度営業日： </div>
-                <div id="dataOfDate">182</div>
+                <div id="dataOfDate">{{dataPdf.totals.totalDate}}</div>
                 <div>日</div>
             </div>
         </div>
     </div>
    
-    <script src="./preload.js"></script>
-    <script src="./renserer.js"></script>
+    <script src="../../middle/preload.js"></script>
 </body>
 </html>

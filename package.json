@@ -1,23 +1,32 @@
 {
   "name": "electron-app",
-  "version": "1.0.0",
-  "description": "kien",
+  "version": "2.1.0",
+  "description": "年度集計ツール Electron App ",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "electron-builder"
   },
   "author": "kiendesa",
   "license": "MIT",
+  "build": {
+    "productName": "年度集計ツール",
+    "copyright": "Copyright 2020 KienDesa Software.",
+    "appId": "com.example.my-electron-app"
+  },
   "devDependencies": {
-    "electron": "^29.1.6"
+    "electron": "^29.1.6",
+    "electron-builder": "^24.13.3"
   },
   "dependencies": {
     "dotenv": "^16.4.5",
     "electron-reload": "^2.0.0-alpha.1",
     "exceljs": "^4.4.0",
+    "handlebars": "^4.7.8",
     "html-pdf": "^3.0.1",
-    "puppeteer": "^22.6.5",
+    "open": "^10.1.0",
+    "puppeteer": "^22.7.1",
     "sheetjs": "^1.0.21",
     "xlsx": "^0.18.5",
     "xlsx-populate": "^1.21.0"
