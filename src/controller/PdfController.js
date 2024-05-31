@@ -36,7 +36,8 @@ module.exports = async function printPDF(event, year) {
         const cssContent = fs.readFileSync(cssFilePath, 'utf8');
 
         await page.setContent(renderedHtml, { waitUntil: 'domcontentloaded' });
-        await page.addStyleTag({ content: cssContent });
+        await page.addStyleTag({ url: 'https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css' });
+        await page.addStyleTag({ content: cssContent, type: 'text/css' });
 
         const today = new Date();
         const yearDate = today.getFullYear();

@@ -20,6 +20,7 @@
     "electron-builder": "^24.13.3"
   },
   "dependencies": {
+    "bootstrap": "^5.3.3",
     "dotenv": "^16.4.5",
     "electron-reload": "^2.0.0-alpha.1",
     "exceljs": "^4.4.0",
