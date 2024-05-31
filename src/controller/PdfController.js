@@ -38,8 +38,14 @@ module.exports = async function printPDF(event, year) {
         await page.setContent(renderedHtml, { waitUntil: 'domcontentloaded' });
         await page.addStyleTag({ content: cssContent });
 
+        const today = new Date();
+        const yearDate = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        const formattedDate = `${yearDate}${month}${day}.pdf`;
+
         // PDFを印刷すること
-        const pdfPath = path.join(app.getPath('downloads'), `${year}_年度.pdf`);
+        const pdfPath = path.join(app.getPath('downloads'), `年度_${formattedDate}.pdf`);
         await page.pdf({ path: pdfPath, format: 'A4', printBackground: true });
 
         console.log('PDF created:', pdfPath);

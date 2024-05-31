@@ -94,23 +94,38 @@ async function getData(workbook) {
 
     /*ーーーーー戸籍集計報告・グラフ【公用】ーーーーーー*/
     const worksheetPublic = workbook.getWorksheet('戸籍集計報告・グラフ【公用】');
-    let lastUseColumnPublic = worksheetPublic.getRow(6).actualCellCount + 1;
-    let lastUseRowPublic = worksheetPublic.getColumn(lastUseColumnPublic).values.length - 1;
+
+    let lastUseColumnPublic = 0;
+    worksheetPublic.getRow(6).eachCell({ includeEmpty: true }, (cell, colNumber) => {
+        if (cell.value !== null && cell.value !== undefined && cell.value !== '') {
+            lastUseColumnPublic = colNumber;
+        }
+    });
+
+    let lastUseRowPublic = 0;
+    worksheetPublic.getColumn(lastUseColumnPublic).eachCell({ includeEmpty: true }, (cell, rowNumber) => {
+        if (cell.value !== null && cell.value !== undefined && cell.value !== '') {
+            lastUseRowPublic = rowNumber;
+        }
+    });
     const publicValue = worksheetPublic.getCell(lastUseRowPublic, lastUseColumnPublic).value;
-    // let lastPulicColumn = worksheetPublic.getColumn(1).values.length;
-    // const publicValue = worksheetPublic.getCell('Z' + lastPulicColumn).value;
+
 
     /*ーーーーー住民票集計報告ーーーーーーー*/
     const worksheetReport = workbook.getWorksheet('住民票集計報告');
-    let lastRowRport = worksheetReport.getColumn(1).values.length - 1;
+    let lastRowReport = worksheetReport.getColumn(1).values.length;
+    while (!worksheetReport.getCell(lastRowReport, 1).value) {
+        lastRowReport--;
+    }
+
     //② 公用請求分（送付分のみ
-    const receivedValue = worksheetReport.getCell('F' + lastRowRport).value;
+    const receivedValue = worksheetReport.getCell('F' + lastRowReport).value;
     //④ 郵送住民票返戻（該当なし）（送付分のみ）公用
-    const returnValue = worksheetReport.getCell('G' + lastRowRport).value;
+    const returnValue = worksheetReport.getCell('G' + lastRowReport).value;
     //① 一般請求分（送付分のみ）
-    const receivedValue2 = worksheetReport.getCell('N' + lastRowRport).value;
+    const receivedValue2 = worksheetReport.getCell('N' + lastRowReport).value;
     //④ 郵送住民票返戻（該当なし）（送付分のみ）一般
-    const returnValue2 = worksheetReport.getCell('P' + lastRowRport).value;
+    const returnValue2 = worksheetReport.getCell('P' + lastRowReport).value;
 
     return [
         countDate,
