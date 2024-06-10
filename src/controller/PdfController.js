@@ -39,14 +39,8 @@ module.exports = async function printPDF(event, year) {
         await page.addStyleTag({ url: 'https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css' });
         await page.addStyleTag({ content: cssContent, type: 'text/css' });
 
-        const today = new Date();
-        const yearDate = today.getFullYear();
-        const month = String(today.getMonth() + 1).padStart(2, '0');
-        const day = String(today.getDate()).padStart(2, '0');
-        const formattedDate = `${yearDate}${month}${day}.pdf`;
-
         // PDFを印刷すること
-        const pdfPath = path.join(app.getPath('downloads'), `年度_${formattedDate}.pdf`);
+        const pdfPath = path.join(app.getPath('downloads'), `【電算】_${year}年度処理件数実績.pdf`);
         await page.pdf({ path: pdfPath, format: 'A4', printBackground: true });
 
         console.log('PDF created:', pdfPath);
@@ -118,6 +112,18 @@ async function caulateDataforPdf() {
     // 総件数
     let sumTotalB = parseInt(totals.totalReceivedValue) + parseInt(totals.totalReturndValue) + parseInt(totals.totalReceivedPublic)
         + parseInt(totals.totalReturndPublic)
-
+    sumA = sumA.toLocaleString('ja-JP');
+    sumB = sumB.toLocaleString('ja-JP');
+    sumTotalA = sumTotalA.toLocaleString('ja-JP');
+    sumTotalB = sumTotalB.toLocaleString('ja-JP');
+    totals.totalProcessValue = totals.totalProcessValue.toLocaleString('ja-JP');
+    totals.totalSendValue = totals.totalSendValue.toLocaleString('ja-JP');
+    totals.totalAllCaseValue = totals.totalAllCaseValue.toLocaleString('ja-JP');
+    totals.totalUsevalue = totals.totalUsevalue.toLocaleString('ja-JP');
+    totals.totalPublicValue = totals.totalPublicValue.toLocaleString('ja-JP');
+    totals.totalReceivedValue = totals.totalReceivedValue.toLocaleString('ja-JP');
+    totals.totalReturndValue = totals.totalReturndValue.toLocaleString('ja-JP');
+    totals.totalReceivedPublic = totals.totalReceivedPublic.toLocaleString('ja-JP');
+    totals.totalReturndPublic = totals.totalReturndPublic.toLocaleString('ja-JP');
     return { totals, sumA, sumB, sumTotalA, sumTotalB };
 }
