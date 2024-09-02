@@ -38,7 +38,7 @@ document.getElementById('directoryInput').addEventListener('change', function (e
         }
 
     } else {
-        document.getElementById('folder-path').innerText = "No folder selected";
+        alert("Excelのフォルダを選んでください。");
     }
 });
 

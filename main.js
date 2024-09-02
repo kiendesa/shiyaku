@@ -20,7 +20,7 @@ async function createWindow() {
 
 app.whenReady().then(createWindow);
 
-// データを読み込む、書き込む
+// データを読み込む、書き込む// test
 ipcMain.on('readExcelData', async (event, filePaths) => {
     await readExcelData(event, filePaths);
 });
